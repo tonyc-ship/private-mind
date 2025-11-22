@@ -1,0 +1,604 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		290804DF2E1C7214006C7AB9 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 290804DE2E1C7214006C7AB9 /* WidgetKit.framework */; };
+		290804E12E1C7214006C7AB9 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 290804E02E1C7214006C7AB9 /* SwiftUI.framework */; };
+		290804F02E1C7214006C7AB9 /* RecordingStatusWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 290804DC2E1C7214006C7AB9 /* RecordingStatusWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		2943089C2ED1570C0013B60C /* llamaforked in Frameworks */ = {isa = PBXBuildFile; productRef = 2943089B2ED1570C0013B60C /* llamaforked */; };
+		29594AB12E0C801F00A3A2B4 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 29594AB02E0C801F00A3A2B4 /* GRDB */; };
+		29594ABB2E0DAD4500A3A2B4 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 29594ABA2E0DAD4500A3A2B4 /* MarkdownUI */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		290804EE2E1C7214006C7AB9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29BF4EE62E0C7D0200AFBBB8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 290804DB2E1C7214006C7AB9;
+			remoteInfo = RecordingStatusWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		290804F52E1C7214006C7AB9 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				290804F02E1C7214006C7AB9 /* RecordingStatusWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		290804DC2E1C7214006C7AB9 /* RecordingStatusWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RecordingStatusWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		290804DE2E1C7214006C7AB9 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		290804E02E1C7214006C7AB9 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		290804FB2E1C756C006C7AB9 /* RecordingStatusWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RecordingStatusWidgetExtension.entitlements; sourceTree = "<group>"; };
+		29BF4EEE2E0C7D0200AFBBB8 /* PrivateMind.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PrivateMind.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		290804F42E1C7214006C7AB9 /* Exceptions for "RecordingStatusWidget" folder in "RecordingStatusWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 290804DB2E1C7214006C7AB9 /* RecordingStatusWidgetExtension */;
+		};
+		290804F92E1C74FF006C7AB9 /* Exceptions for "PrivateMind" folder in "RecordingStatusWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Assets.xcassets,
+				Models/RecordingActivityAttributes.swift,
+			);
+			target = 290804DB2E1C7214006C7AB9 /* RecordingStatusWidgetExtension */;
+		};
+		29594AB62E0CA53800A3A2B4 /* Exceptions for "PrivateMind" folder in "PrivateMind" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 29BF4EED2E0C7D0200AFBBB8 /* PrivateMind */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		290804E22E1C7214006C7AB9 /* RecordingStatusWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				290804F42E1C7214006C7AB9 /* Exceptions for "RecordingStatusWidget" folder in "RecordingStatusWidgetExtension" target */,
+			);
+			path = RecordingStatusWidget;
+			sourceTree = "<group>";
+		};
+		29BF4EF02E0C7D0200AFBBB8 /* PrivateMind */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				29594AB62E0CA53800A3A2B4 /* Exceptions for "PrivateMind" folder in "PrivateMind" target */,
+				290804F92E1C74FF006C7AB9 /* Exceptions for "PrivateMind" folder in "RecordingStatusWidgetExtension" target */,
+			);
+			path = PrivateMind;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		290804D92E1C7214006C7AB9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				290804E12E1C7214006C7AB9 /* SwiftUI.framework in Frameworks */,
+				290804DF2E1C7214006C7AB9 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29BF4EEB2E0C7D0200AFBBB8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2943089C2ED1570C0013B60C /* llamaforked in Frameworks */,
+				29594AB12E0C801F00A3A2B4 /* GRDB in Frameworks */,
+				29594ABB2E0DAD4500A3A2B4 /* MarkdownUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		290804DD2E1C7214006C7AB9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				290804DE2E1C7214006C7AB9 /* WidgetKit.framework */,
+				290804E02E1C7214006C7AB9 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		29BF4EE52E0C7D0200AFBBB8 = {
+			isa = PBXGroup;
+			children = (
+				290804FB2E1C756C006C7AB9 /* RecordingStatusWidgetExtension.entitlements */,
+				29BF4EF02E0C7D0200AFBBB8 /* PrivateMind */,
+				290804E22E1C7214006C7AB9 /* RecordingStatusWidget */,
+				290804DD2E1C7214006C7AB9 /* Frameworks */,
+				29BF4EEF2E0C7D0200AFBBB8 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		29BF4EEF2E0C7D0200AFBBB8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				29BF4EEE2E0C7D0200AFBBB8 /* PrivateMind.app */,
+				290804DC2E1C7214006C7AB9 /* RecordingStatusWidgetExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		290804DB2E1C7214006C7AB9 /* RecordingStatusWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 290804F12E1C7214006C7AB9 /* Build configuration list for PBXNativeTarget "RecordingStatusWidgetExtension" */;
+			buildPhases = (
+				290804D82E1C7214006C7AB9 /* Sources */,
+				290804D92E1C7214006C7AB9 /* Frameworks */,
+				290804DA2E1C7214006C7AB9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				290804E22E1C7214006C7AB9 /* RecordingStatusWidget */,
+			);
+			name = RecordingStatusWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = RecordingStatusWidgetExtension;
+			productReference = 290804DC2E1C7214006C7AB9 /* RecordingStatusWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		29BF4EED2E0C7D0200AFBBB8 /* PrivateMind */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 29BF4EFC2E0C7D0300AFBBB8 /* Build configuration list for PBXNativeTarget "PrivateMind" */;
+			buildPhases = (
+				29BF4EEA2E0C7D0200AFBBB8 /* Sources */,
+				29BF4EEB2E0C7D0200AFBBB8 /* Frameworks */,
+				29BF4EEC2E0C7D0200AFBBB8 /* Resources */,
+				290804F52E1C7214006C7AB9 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				290804EF2E1C7214006C7AB9 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				29BF4EF02E0C7D0200AFBBB8 /* PrivateMind */,
+			);
+			name = PrivateMind;
+			packageProductDependencies = (
+				29594AB02E0C801F00A3A2B4 /* GRDB */,
+				29594ABA2E0DAD4500A3A2B4 /* MarkdownUI */,
+				2943089B2ED1570C0013B60C /* llamaforked */,
+			);
+			productName = PrivateMind;
+			productReference = 29BF4EEE2E0C7D0200AFBBB8 /* PrivateMind.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29BF4EE62E0C7D0200AFBBB8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
+				TargetAttributes = {
+					290804DB2E1C7214006C7AB9 = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					29BF4EED2E0C7D0200AFBBB8 = {
+						CreatedOnToolsVersion = 16.2;
+					};
+				};
+			};
+			buildConfigurationList = 29BF4EE92E0C7D0200AFBBB8 /* Build configuration list for PBXProject "PrivateMind" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 29BF4EE52E0C7D0200AFBBB8;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				29594AAF2E0C801F00A3A2B4 /* XCRemoteSwiftPackageReference "GRDB" */,
+				29594AB92E0DAD4500A3A2B4 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
+				2943089A2ED1570C0013B60C /* XCLocalSwiftPackageReference "../llamaforked" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 29BF4EEF2E0C7D0200AFBBB8 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				29BF4EED2E0C7D0200AFBBB8 /* PrivateMind */,
+				290804DB2E1C7214006C7AB9 /* RecordingStatusWidgetExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		290804DA2E1C7214006C7AB9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29BF4EEC2E0C7D0200AFBBB8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		290804D82E1C7214006C7AB9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29BF4EEA2E0C7D0200AFBBB8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		290804EF2E1C7214006C7AB9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 290804DB2E1C7214006C7AB9 /* RecordingStatusWidgetExtension */;
+			targetProxy = 290804EE2E1C7214006C7AB9 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		290804F22E1C7214006C7AB9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = RecordingStatusWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2HTZ423MZ4;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RecordingStatusWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = RecordingStatusWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = privatemind.PrivateMind.RecordingStatusWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		290804F32E1C7214006C7AB9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = RecordingStatusWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2HTZ423MZ4;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RecordingStatusWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = RecordingStatusWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = privatemind.PrivateMind.RecordingStatusWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		29BF4EFA2E0C7D0300AFBBB8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		29BF4EFB2E0C7D0300AFBBB8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		29BF4EFD2E0C7D0300AFBBB8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PrivateMind/PrivateMind.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"PrivateMind/Preview Content\"";
+				DEVELOPMENT_TEAM = 2HTZ423MZ4;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PrivateMind/Info.plist;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Private Mind needs to use microphone to transcribe the meeting.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = privatemind.PrivateMind;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		29BF4EFE2E0C7D0300AFBBB8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PrivateMind/PrivateMind.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"PrivateMind/Preview Content\"";
+				DEVELOPMENT_TEAM = 2HTZ423MZ4;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PrivateMind/Info.plist;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Private Mind needs to use microphone to transcribe the meeting.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = privatemind.PrivateMind;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		290804F12E1C7214006C7AB9 /* Build configuration list for PBXNativeTarget "RecordingStatusWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				290804F22E1C7214006C7AB9 /* Debug */,
+				290804F32E1C7214006C7AB9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		29BF4EE92E0C7D0200AFBBB8 /* Build configuration list for PBXProject "PrivateMind" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				29BF4EFA2E0C7D0300AFBBB8 /* Debug */,
+				29BF4EFB2E0C7D0300AFBBB8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		29BF4EFC2E0C7D0300AFBBB8 /* Build configuration list for PBXNativeTarget "PrivateMind" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				29BF4EFD2E0C7D0300AFBBB8 /* Debug */,
+				29BF4EFE2E0C7D0300AFBBB8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		2943089A2ED1570C0013B60C /* XCLocalSwiftPackageReference "../llamaforked" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../llamaforked;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		29594AAF2E0C801F00A3A2B4 /* XCRemoteSwiftPackageReference "GRDB" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDB.swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		29594AB92E0DAD4500A3A2B4 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gonzalezreal/swift-markdown-ui";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.4.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2943089B2ED1570C0013B60C /* llamaforked */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = llamaforked;
+		};
+		29594AB02E0C801F00A3A2B4 /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 29594AAF2E0C801F00A3A2B4 /* XCRemoteSwiftPackageReference "GRDB" */;
+			productName = GRDB;
+		};
+		29594ABA2E0DAD4500A3A2B4 /* MarkdownUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 29594AB92E0DAD4500A3A2B4 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
+			productName = MarkdownUI;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 29BF4EE62E0C7D0200AFBBB8 /* Project object */;
+}

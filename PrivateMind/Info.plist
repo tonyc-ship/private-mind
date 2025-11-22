@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<!-- Configuration keys - Replace with your actual values before building -->
+	<!-- These should be set via Xcode build settings or environment variables in production -->
+	<key>TranscriptionAWSEndpoint</key>
+	<string>YOUR_AWS_TRANSCRIPTION_ENDPOINT_HERE</string>
+	<key>TranscriptionTencentEndpoint</key>
+	<string>YOUR_TENCENT_TRANSCRIPTION_ENDPOINT_HERE</string>
+	<key>SummaryEndpoint</key>
+	<string>YOUR_SUMMARY_ENDPOINT_HERE</string>
+</dict>
+</plist>

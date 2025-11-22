@@ -1,0 +1,18 @@
+# swift project
+*.xcuserstate
+*.xcuserdata
+swift/AudioCaptureSys/build*
+
+# common
+.DS_Store
+.env
+.env.local
+
+# python
+__pycache__/
+*.pyc
+
+# Configuration files with sensitive data
+# Note: Info.plist.example is tracked, but actual Info.plist should not contain real credentials
+# If you need to override Info.plist locally, create a local copy and add it here
+PrivateMind/Info.plist.local
