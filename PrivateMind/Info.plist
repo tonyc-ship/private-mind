@@ -14,10 +14,6 @@
 	<true/>
 	<!-- Configuration keys - Replace with your actual values before building -->
 	<!-- These should be set via Xcode build settings or environment variables in production -->
-	<key>TranscriptionAWSEndpoint</key>
-	<string>YOUR_AWS_TRANSCRIPTION_ENDPOINT_HERE</string>
-	<key>TranscriptionTencentEndpoint</key>
-	<string>YOUR_TENCENT_TRANSCRIPTION_ENDPOINT_HERE</string>
 	<key>SummaryEndpoint</key>
 	<string>YOUR_SUMMARY_ENDPOINT_HERE</string>
 </dict>

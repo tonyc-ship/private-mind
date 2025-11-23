@@ -20,7 +20,7 @@ actor WhisperContext {
     func fullTranscribe(samples: [Float], languageCode: String = "en") {
         // Leave 2 processors free (i.e. the high-efficiency cores).
         let maxThreads = max(1, min(8, cpuCount() - 2))
-        print("[Whisper] Selecting \(maxThreads) threads")
+        // print("[Whisper] Selecting \(maxThreads) threads")
         var params = whisper_full_default_params(WHISPER_SAMPLING_GREEDY)
         
         // Map language codes to Whisper language codes
@@ -45,7 +45,7 @@ actor WhisperContext {
                 if (whisper_full(context, params, samples.baseAddress, Int32(samples.count)) != 0) {
                     print("[Whisper] Failed to run the model")
                 } else {
-                    whisper_print_timings(context)
+                    // whisper_print_timings(context)
                 }
             }
         }
@@ -57,6 +57,24 @@ actor WhisperContext {
             transcription += String.init(cString: whisper_full_get_segment_text(context, i))
         }
         return transcription
+    }
+    
+    func getSegmentCount() -> Int {
+        return Int(whisper_full_n_segments(context))
+    }
+    
+    struct TranscriptionSegment {
+        let text: String
+    }
+    
+    func getTranscriptionSegments() -> [TranscriptionSegment] {
+        let count = Int(whisper_full_n_segments(context))
+        var segments: [TranscriptionSegment] = []
+        for i in 0..<count {
+            let text = String(cString: whisper_full_get_segment_text(context, Int32(i)))
+            segments.append(TranscriptionSegment(text: text))
+        }
+        return segments
     }
 
     static func createContext(path: String) throws -> WhisperContext {

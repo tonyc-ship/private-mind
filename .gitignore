@@ -3,6 +3,9 @@
 *.xcuserdata
 swift/AudioCaptureSys/build*
 
+# binaries
+*.bin
+
 # common
 .DS_Store
 .env

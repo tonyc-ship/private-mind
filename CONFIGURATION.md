@@ -7,8 +7,6 @@ This project requires several configuration values to be set before building. Th
 Add the following keys to `PrivateMind/Info.plist` with your actual values:
 
 ### API Endpoints
-- `TranscriptionAWSEndpoint`: AWS transcription service endpoint (e.g., `https://aws.example.com`)
-- `TranscriptionTencentEndpoint`: Tencent transcription service endpoint (e.g., `https://tencent.example.com`)
 - `SummaryEndpoint`: Summary generation service endpoint (e.g., `https://summary.example.com`)
 
 ## Setting Up Configuration
@@ -36,10 +34,6 @@ For CI/CD pipelines, you can set these as environment variables and use a build 
 ## Example Info.plist Entry
 
 ```xml
-<key>TranscriptionAWSEndpoint</key>
-<string>https://your-aws-endpoint.example.com</string>
-<key>TranscriptionTencentEndpoint</key>
-<string>https://your-tencent-endpoint.example.com</string>
 <key>SummaryEndpoint</key>
 <string>https://your-summary-endpoint.example.com</string>
 ```

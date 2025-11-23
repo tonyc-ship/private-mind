@@ -17,9 +17,17 @@ final class WhisperTranscribeService: NSObject, ObservableObject, AVAudioRecorde
     private var recordedFile: URL?
     private var session: AVAudioSession { AVAudioSession.sharedInstance() }
     
+    // Track accumulated transcription text
+    private var accumulatedText: String = ""
+    private var lastTranscribedText: String = ""
+    private var lastTranscriptionTime: Date = Date()
+    private var lastProcessedSegmentCount: Int = 0
+    
     private var currentLanguageCode: String = "en-US"
     private var modelUrl: URL? {
-        Bundle.main.url(forResource: "ggml-base.en-q5_0", withExtension: "bin", subdirectory: "whisper")
+        // Try resources/whisper subdirectory first, then fall back to root
+        Bundle.main.url(forResource: "ggml-base", withExtension: "bin", subdirectory: "resources/whisper")
+            ?? Bundle.main.url(forResource: "ggml-base", withExtension: "bin")
     }
     
     private var transcriptionTask: Task<Void, Never>?
@@ -32,6 +40,10 @@ final class WhisperTranscribeService: NSObject, ObservableObject, AVAudioRecorde
         
         currentLanguageCode = languageCode
         displayText = ""
+        accumulatedText = ""
+        lastTranscribedText = ""
+        lastTranscriptionTime = Date()
+        lastProcessedSegmentCount = 0
         
         do {
             try configureAudioSession()
@@ -94,6 +106,9 @@ final class WhisperTranscribeService: NSObject, ObservableObject, AVAudioRecorde
                 try await recorder.startRecording(toOutputFile: file, delegate: self)
                 await MainActor.run {
                     recordedFile = file
+                    // Reset segment count since we're starting a new file
+                    // but keep accumulatedText to continue the transcript
+                    lastProcessedSegmentCount = 0
                     isPaused = false
                     startPeriodicTranscription()
                 }
@@ -120,7 +135,7 @@ final class WhisperTranscribeService: NSObject, ObservableObject, AVAudioRecorde
         do {
             whisperContext = try WhisperContext.createContext(path: modelUrl.path())
             isModelLoaded = true
-            print("[WhisperTranscribe] Model loaded successfully")
+            print("[WhisperTranscribe] Model loaded successfully from: \(modelUrl.path)")
         } catch {
             print("[WhisperTranscribe] Failed to load model: \(error)")
         }
@@ -160,23 +175,106 @@ final class WhisperTranscribeService: NSObject, ObservableObject, AVAudioRecorde
         }
         
         do {
-            let samples = try decodeWaveFile(file, forLastSeconds: 5) // Last 5 seconds
+            // Transcribe the entire file to get all segments with proper context
+            let samples = try decodeWaveFile(file)
             guard !samples.isEmpty else { return }
             
-            // Create a temporary context for incremental transcription
-            // Note: This is a simplified approach. For better real-time transcription,
-            // you might want to use streaming transcription if available in the Whisper API
+            // Transcribe the entire file
             await whisperContext.fullTranscribe(samples: samples, languageCode: currentLanguageCode)
-            let text = await whisperContext.getTranscription()
+            let segmentCount = await whisperContext.getSegmentCount()
+            let allSegments = await whisperContext.getTranscriptionSegments()
             
             await MainActor.run {
-                if !text.isEmpty {
-                    displayText = text
+                // Use the full current transcription (Whisper revises earlier segments as it gets more context)
+                // Filter out blank audio segments and build the full transcript
+                var fullText = ""
+                for segment in allSegments {
+                    let text = segment.text.trimmingCharacters(in: .whitespacesAndNewlines)
+                    // Skip blank audio markers
+                    if !text.isEmpty && text != "[BLANK_AUDIO]" {
+                        if !fullText.isEmpty {
+                            fullText += " "
+                        }
+                        fullText += text
+                    }
+                }
+                
+                // Only update if we have new content or if the transcription has changed
+                // (Whisper might revise earlier segments, so we want to show the latest version)
+                if !fullText.isEmpty {
+                    // Check if this is actually new content or a revision
+                    if segmentCount > lastProcessedSegmentCount {
+                        // New segments added - update the display
+                        accumulatedText = fullText
+                        displayText = fullText
+                        lastProcessedSegmentCount = segmentCount
+                        lastTranscriptionTime = Date()
+                    } else if fullText != accumulatedText {
+                        // Same number of segments but content changed (revision) - update the display
+                        accumulatedText = fullText
+                        displayText = fullText
+                        lastTranscriptionTime = Date()
+                    }
                 }
             }
         } catch {
             print("[WhisperTranscribe] Transcription error: \(error)")
         }
+    }
+    
+    /// Extracts new text segments by comparing new transcription with previous one
+    private func extractNewSegments(from newText: String, previousText: String) -> String {
+        // If previous text is empty, return the new text
+        guard !previousText.isEmpty else {
+            return newText.trimmingCharacters(in: .whitespacesAndNewlines) + " "
+        }
+        
+        // Normalize both texts for comparison
+        let normalizedNew = newText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalizedPrev = previousText.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // If new text is shorter or same, no new content
+        guard normalizedNew.count > normalizedPrev.count else {
+            return ""
+        }
+        
+        // Check if new text starts with previous text (common case)
+        if normalizedNew.hasPrefix(normalizedPrev) {
+            // Extract the suffix as new content
+            let newContent = String(normalizedNew.dropFirst(normalizedPrev.count))
+            return newContent.trimmingCharacters(in: .whitespacesAndNewlines) + " "
+        }
+        
+        // Try to find where the new text diverges from the previous
+        // This handles cases where Whisper might revise earlier segments
+        let newWords = normalizedNew.components(separatedBy: .whitespaces)
+        let prevWords = normalizedPrev.components(separatedBy: .whitespaces)
+        
+        // Find the longest common prefix
+        var commonPrefixCount = 0
+        let minCount = min(newWords.count, prevWords.count)
+        for i in 0..<minCount {
+            if newWords[i] == prevWords[i] {
+                commonPrefixCount += 1
+            } else {
+                break
+            }
+        }
+        
+        // If there's significant overlap, extract the new words
+        if commonPrefixCount >= prevWords.count / 2 {
+            let newWordsOnly = newWords[commonPrefixCount...]
+            return newWordsOnly.joined(separator: " ") + " "
+        }
+        
+        // Fallback: if new text is significantly longer, assume it's mostly new content
+        // This is a heuristic for when Whisper revises the transcription
+        if normalizedNew.count > Int(Double(normalizedPrev.count) * 1.5) {
+            // Return the difference, but be conservative
+            return ""
+        }
+        
+        return ""
     }
     
     private func performFinalTranscription(file: URL) async {
@@ -194,11 +292,36 @@ final class WhisperTranscribeService: NSObject, ObservableObject, AVAudioRecorde
             let samples = try decodeWaveFile(file)
             guard !samples.isEmpty else { return }
             
+            // Perform final transcription on the entire file
             await whisperContext.fullTranscribe(samples: samples, languageCode: currentLanguageCode)
-            let text = await whisperContext.getTranscription()
+            let finalText = await whisperContext.getTranscription()
             
             await MainActor.run {
-                displayText = text
+                // Use the final transcription result (it's more accurate than accumulated)
+                // But if we have accumulated text, merge them intelligently
+                if !accumulatedText.isEmpty && !finalText.isEmpty {
+                    // Final transcription is usually more accurate, so prefer it
+                    // But we can also append any remaining text that wasn't in accumulated
+                    let normalizedFinal = finalText.trimmingCharacters(in: .whitespacesAndNewlines)
+                    let normalizedAccumulated = accumulatedText.trimmingCharacters(in: .whitespacesAndNewlines)
+                    
+                    // If final text contains accumulated text, use final
+                    // Otherwise, append final to accumulated
+                    if normalizedFinal.contains(normalizedAccumulated) || normalizedAccumulated.isEmpty {
+                        displayText = normalizedFinal
+                        accumulatedText = normalizedFinal
+                    } else {
+                        // Append any new content from final transcription
+                        let newContent = extractNewSegments(from: normalizedFinal, previousText: normalizedAccumulated)
+                        accumulatedText += newContent
+                        displayText = accumulatedText
+                    }
+                } else {
+                    // No accumulated text, use final transcription
+                    displayText = finalText.trimmingCharacters(in: .whitespacesAndNewlines)
+                    accumulatedText = displayText
+                }
+                
                 // Clean up model to free memory
                 self.whisperContext = nil
                 self.isModelLoaded = false
@@ -214,6 +337,7 @@ final class WhisperTranscribeService: NSObject, ObservableObject, AVAudioRecorde
         recordedFile = nil
         isStreaming = false
         isPaused = false
+        // Note: Don't clear accumulatedText here - it's used when stopping
         
         if deactivateAudioSession {
             try? session.setActive(false)

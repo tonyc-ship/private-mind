@@ -6,12 +6,7 @@ struct NewNoteView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var recorder = AudioRecorder()
     @StateObject private var viewModel: NoteViewModel
-    // Support both WebSocket and Whisper transcription
-    @StateObject private var websocketTranscriber = TranscribeService()
     @StateObject private var whisperTranscriber = WhisperTranscribeService()
-    
-    // Persist transcription method preference
-    @AppStorage("useWhisperTranscription") private var useWhisperTranscription: Bool = false
     
     @State private var isRecordingFinished = false
     @State private var isGeneratingSummary = false
@@ -55,11 +50,7 @@ struct NewNoteView: View {
             // Auto-start recording when view appears
             if !recorder.isRecording {
                 recorder.startRecording(title: viewModel.note.title.isEmpty ? "New Note" : viewModel.note.title)
-                if useWhisperTranscription {
-                    await whisperTranscriber.start(languageCode: languageCode, email: "")
-                } else {
-                    await websocketTranscriber.start(languageCode: languageCode, email: "")
-                }
+                await whisperTranscriber.start(languageCode: languageCode, email: "")
             }
         }
     }
@@ -80,13 +71,6 @@ struct NewNoteView: View {
                             Text(lang.name).tag(lang.code)
                         }
                     }
-                    
-                    Divider()
-                    
-                    Picker("Transcription", selection: $useWhisperTranscription) {
-                        Label("WebSocket (Online)", systemImage: "network").tag(false)
-                        Label("Whisper (On-device)", systemImage: "cpu").tag(true)
-                    }
                 } label: {
                     HStack(spacing: 4) {
                         Text(supportedLanguages.first(where: { $0.code == languageCode })?.name ?? "Language")
@@ -104,28 +88,15 @@ struct NewNoteView: View {
                         await restartTranscription(languageCode: newLanguageCode)
                     }
                 }
-                .onChange(of: useWhisperTranscription) { _ in
-                    Task {
-                        await restartTranscription(languageCode: languageCode)
-                    }
-                }
 
                 // Pause/Resume Button
                 Button {
                     if recorder.isPaused {
                         recorder.resume()
-                        if useWhisperTranscription {
-                            whisperTranscriber.resume()
-                        } else {
-                            websocketTranscriber.resume()
-                        }
+                        whisperTranscriber.resume()
                     } else {
                         recorder.pause()
-                        if useWhisperTranscription {
-                            whisperTranscriber.pause()
-                        } else {
-                            websocketTranscriber.pause()
-                        }
+                        whisperTranscriber.pause()
                     }
                 } label: {
                     Label(recorder.isPaused ? "Resume" : "Pause", systemImage: recorder.isPaused ? "play.circle.fill" : "pause.circle.fill")
@@ -159,8 +130,8 @@ struct NewNoteView: View {
                 ScrollViewReader { proxy in
                     ScrollView {
                         VStack {
-                            Text(useWhisperTranscription ? whisperTranscriber.displayText : websocketTranscriber.displayText)
-                                .foregroundColor((useWhisperTranscription ? whisperTranscriber.displayText : websocketTranscriber.displayText).isEmpty ? .secondary : .primary)
+                            Text(whisperTranscriber.displayText)
+                                .foregroundColor(whisperTranscriber.displayText.isEmpty ? .secondary : .primary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.horizontal)
 
@@ -171,7 +142,7 @@ struct NewNoteView: View {
                                 .onDisappear { autoScroll = false }
                         }
                     }
-                    .onChange(of: useWhisperTranscription ? whisperTranscriber.displayText : websocketTranscriber.displayText) { _ in
+                    .onChange(of: whisperTranscriber.displayText) { _ in
                         if autoScroll {
                             withAnimation {
                                 proxy.scrollTo(transcriptBottomID, anchor: .bottom)
@@ -267,13 +238,8 @@ struct NewNoteView: View {
     private func endRecordingAndSummarize() {
         // Stop recording and transcription
         recorder.stopRecording()
-        if useWhisperTranscription {
-            whisperTranscriber.stop()
-            viewModel.note.transcript = whisperTranscriber.displayText
-        } else {
-            websocketTranscriber.stop()
-            viewModel.note.transcript = websocketTranscriber.displayText
-        }
+        whisperTranscriber.stop()
+        viewModel.note.transcript = whisperTranscriber.displayText
         viewModel.note.duration = String(recorder.elapsed)
         
         // Switch to detail view
@@ -284,9 +250,8 @@ struct NewNoteView: View {
         Task {
             isGeneratingSummary = true
             do {
-                let transcriptText = useWhisperTranscription ? whisperTranscriber.displayText : websocketTranscriber.displayText
                 let summary = try await SummaryService.shared.generateSummary(
-                    transcript: transcriptText,
+                    transcript: whisperTranscriber.displayText,
                     notes: viewModel.note.content,
                     languageCode: languageCode
                 )
@@ -362,13 +327,8 @@ struct NewNoteView: View {
     }
 
     private func restartTranscription(languageCode: String) async {
-        if useWhisperTranscription {
-            whisperTranscriber.stop(deactivateAudioSession: false)
-            await whisperTranscriber.start(languageCode: languageCode, email: "")
-        } else {
-            websocketTranscriber.stop(deactivateAudioSession: false)
-            await websocketTranscriber.start(languageCode: languageCode, email: "")
-        }
+        whisperTranscriber.stop(deactivateAudioSession: false)
+        await whisperTranscriber.start(languageCode: languageCode, email: "")
     }
 
     private func timeString(from interval: TimeInterval) -> String {
