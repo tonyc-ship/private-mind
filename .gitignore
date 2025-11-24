@@ -1,6 +1,9 @@
 # swift project
 *.xcuserstate
-*.xcuserdata
+# Xcode user-specific data (should not be committed)
+xcuserdata/
+**/xcuserdata/
+# Xcode shared data (schemes) should be committed - do not ignore xcshareddata/
 swift/AudioCaptureSys/build*
 
 # binaries

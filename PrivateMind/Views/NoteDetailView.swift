@@ -7,6 +7,8 @@ struct NoteDetailView: View {
     @State private var selection = 0
     @State private var showCopyConfirmation = false
     @State private var isResummarizing = false
+    @State private var streamingSummary = "" // For streaming summary display
+    @State private var streamingTitle = "" // For streaming title display
     @State private var languageCode = "(same as the transcript)" // Default; can be replaced by user preference later
 
     private var transcriptLines: [String] {
@@ -133,18 +135,31 @@ struct NoteDetailView: View {
     private func resummarize() {
         Task {
             isResummarizing = true
+            streamingSummary = ""
+            streamingTitle = ""
             do {
+                // Generate summary with streaming
                 let summary = try await SummaryService.shared.generateSummary(
                     transcript: viewModel.note.transcript,
                     notes: viewModel.note.content,
-                    languageCode: languageCode
+                    languageCode: languageCode,
+                    tokenCallback: { token in
+                        streamingSummary += token
+                        viewModel.note.summary = streamingSummary
+                    }
                 )
                 viewModel.note.summary = summary
 
-                // Optionally refresh title as well
+                // Optionally refresh title as well with streaming
                 let title = try await SummaryService.shared.generateTitle(
                     summary: summary,
-                    languageCode: languageCode
+                    languageCode: languageCode,
+                    tokenCallback: { token in
+                        streamingTitle += token
+                        if !streamingTitle.isEmpty {
+                            viewModel.note.title = streamingTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+                        }
+                    }
                 )
                 if !title.isEmpty {
                     viewModel.note.title = title
@@ -154,6 +169,8 @@ struct NoteDetailView: View {
                 print("Failed to resummarize note: \(error)")
             }
             isResummarizing = false
+            streamingSummary = ""
+            streamingTitle = ""
         }
     }
 }

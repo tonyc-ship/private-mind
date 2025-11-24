@@ -10,6 +10,8 @@ struct NewNoteView: View {
     
     @State private var isRecordingFinished = false
     @State private var isGeneratingSummary = false
+    @State private var streamingSummary = "" // For streaming summary display
+    @State private var streamingTitle = "" // For streaming title display
     @State private var selection = 0 // Recording: 0=Notes, 1=Transcript | Detail: 0=Summary, 1=Notes, 2=Transcript
     // Persist the user's last selected language across notes
     @AppStorage("selectedLanguageCode") private var languageCode: String = "en-US"
@@ -249,18 +251,31 @@ struct NewNoteView: View {
         // Generate summary
         Task {
             isGeneratingSummary = true
+            streamingSummary = ""
+            streamingTitle = ""
             do {
+                // Generate summary with streaming
                 let summary = try await SummaryService.shared.generateSummary(
                     transcript: whisperTranscriber.displayText,
                     notes: viewModel.note.content,
-                    languageCode: languageCode
+                    languageCode: languageCode,
+                    tokenCallback: { token in
+                        streamingSummary += token
+                        viewModel.note.summary = streamingSummary
+                    }
                 )
                 viewModel.note.summary = summary
                 
-                // Generate title based on summary
+                // Generate title based on summary with streaming
                 let title = try await SummaryService.shared.generateTitle(
                     summary: summary,
-                    languageCode: languageCode
+                    languageCode: languageCode,
+                    tokenCallback: { token in
+                        streamingTitle += token
+                        if !streamingTitle.isEmpty {
+                            viewModel.note.title = streamingTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+                        }
+                    }
                 )
                 if !title.isEmpty {
                     viewModel.note.title = title
@@ -270,6 +285,8 @@ struct NewNoteView: View {
                 viewModel.note.summary = "Error: Could not generate summary."
             }
             isGeneratingSummary = false
+            streamingSummary = ""
+            streamingTitle = ""
             viewModel.save(note: viewModel.note) // Save after summary generation
         }
     }
@@ -302,18 +319,31 @@ struct NewNoteView: View {
     private func resummarize() {
         Task {
             isGeneratingSummary = true
+            streamingSummary = ""
+            streamingTitle = ""
             do {
+                // Generate summary with streaming
                 let summary = try await SummaryService.shared.generateSummary(
                     transcript: viewModel.note.transcript,
                     notes: viewModel.note.content,
-                    languageCode: languageCode
+                    languageCode: languageCode,
+                    tokenCallback: { token in
+                        streamingSummary += token
+                        viewModel.note.summary = streamingSummary
+                    }
                 )
                 viewModel.note.summary = summary
 
-                // Optionally refresh title as well
+                // Optionally refresh title as well with streaming
                 let title = try await SummaryService.shared.generateTitle(
                     summary: summary,
-                    languageCode: languageCode
+                    languageCode: languageCode,
+                    tokenCallback: { token in
+                        streamingTitle += token
+                        if !streamingTitle.isEmpty {
+                            viewModel.note.title = streamingTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+                        }
+                    }
                 )
                 if !title.isEmpty {
                     viewModel.note.title = title

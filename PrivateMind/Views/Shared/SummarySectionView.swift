@@ -9,18 +9,38 @@ struct SummarySectionView: View {
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            if isProcessing {
-                VStack(spacing: 4) {
-                    ProgressView()
-                    Text("Generating summary…")
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-            } else {
-                ScrollView {
-                    Markdown(summary)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 8) {
+                    if isProcessing && summary.isEmpty {
+                        // Show loading indicator only if summary is completely empty
+                        VStack(spacing: 4) {
+                            ProgressView()
+                            Text("Generating summary…")
+                                .font(.footnote)
+                                .foregroundColor(.secondary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .center)
                         .padding()
+                    } else if isProcessing {
+                        // Show streaming summary with processing indicator
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack(spacing: 8) {
+                                ProgressView()
+                                    .scaleEffect(0.8)
+                                Text("Generating summary…")
+                                    .font(.footnote)
+                                    .foregroundColor(.secondary)
+                            }
+                            .padding(.bottom, 4)
+                            
+                            Markdown(summary)
+                        }
+                        .padding()
+                    } else {
+                        // Show final summary
+                        Markdown(summary)
+                            .padding()
+                    }
                 }
             }
 
