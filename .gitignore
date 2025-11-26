@@ -22,3 +22,7 @@ __pycache__/
 # Note: Info.plist.example is tracked, but actual Info.plist should not contain real credentials
 # If you need to override Info.plist locally, create a local copy and add it here
 PrivateMind/Info.plist.local
+
+# XCFramework binaries (too large for git, build locally)
+llama-cpp-xcframework/LlamaFramework.xcframework/
+llama-cpp-xcframework/.build

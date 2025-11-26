@@ -12,8 +12,13 @@ class LlamaState: ObservableObject {
     private var llamaContext: LlamaContext?
     private var defaultModelUrl: URL? {
         // Try to find model in bundle or documents directory
-        // let modelFileName: String = "gemma-1.1-2b-it.Q8_0"
-        let modelFileName: String = "gemma-1.1-2b-it-Q4_K_M"
+//        let modelFileName: String = "Qwen3-4B-Instruct-2507-Q4_K_M" // 11 tok/s, 2.5GB
+        let modelFileName: String = "Qwen3-1.7B-Q4_K_M" // 29 tok/s, 1.1GB
+        
+//        let modelFileName: String = "gemma-3-4b-it-Q4_K_M" //  10 tok/s, 2.5GB
+//        let modelFileName: String = "gemma-3n-E2B-it-Q4_K_M" //  13 tok/s, 3.0GB
+//        let modelFileName: String = "google_gemma-3-1b-it-Q4_K_M" // 36 tok/s, 0.8GB
+
         return Bundle.main.url(forResource: modelFileName, withExtension: "gguf", subdirectory: "models")
             ?? getDocumentsDirectory().appendingPathComponent("\(modelFileName).gguf")
     }
@@ -43,7 +48,7 @@ class LlamaState: ObservableObject {
         print("[LlamaState] Model loaded successfully")
     }
 
-    func complete(text: String) async throws -> String {
+    func complete(text: String) async throws -> (String, Int) {
         guard let llamaContext else {
             // Try to load model if not already loaded
             try loadModel(modelUrl: nil as URL?)
@@ -56,7 +61,7 @@ class LlamaState: ObservableObject {
         return try await completeWithContext(llamaContext: llamaContext, text: text, tokenCallback: nil as ((String) -> Void)?)
     }
     
-    func complete(text: String, tokenCallback: ((String) -> Void)?) async throws -> String {
+    func complete(text: String, tokenCallback: ((String) -> Void)?) async throws -> (String, Int) {
         guard let llamaContext else {
             // Try to load model if not already loaded
             try loadModel(modelUrl: nil)
@@ -69,7 +74,7 @@ class LlamaState: ObservableObject {
         return try await completeWithContext(llamaContext: llamaContext, text: text, tokenCallback: tokenCallback)
     }
     
-    private func completeWithContext(llamaContext: LlamaContext, text: String, tokenCallback: ((String) -> Void)?) async throws -> String {
+    private func completeWithContext(llamaContext: LlamaContext, text: String, tokenCallback: ((String) -> Void)?) async throws -> (String, Int) {
         // Clear context before starting new completion
         await llamaContext.clear()
         await llamaContext.completion_init(text: text)
@@ -108,7 +113,7 @@ class LlamaState: ObservableObject {
         await llamaContext.clear()
         let trimmed = result.trimmingCharacters(in: .whitespacesAndNewlines)
         print("[LlamaState] Completion finished. Token count: \(tokenCount), Raw result length: \(result.count), Trimmed length: \(trimmed.count)")
-        return trimmed
+        return (trimmed, tokenCount)
     }
 
     func clear() async {

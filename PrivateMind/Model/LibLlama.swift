@@ -5,7 +5,7 @@
 //
 
 import Foundation
-import llamaforked
+import llama
 
 enum LlamaError: Error {
     case couldNotInitializeContext
@@ -74,12 +74,11 @@ actor LlamaContext {
         print("Using \(n_threads) threads")
 
         var ctx_params = llama_context_default_params()
-        ctx_params.seed  = 1234
         ctx_params.n_ctx = 4096  // Increased context window for longer inputs
-        ctx_params.n_threads       = UInt32(n_threads)
-        ctx_params.n_threads_batch = UInt32(n_threads)
+        ctx_params.n_threads       = Int32(n_threads)
+        ctx_params.n_threads_batch = Int32(n_threads)
 
-        let context = llama_new_context_with_model(model, ctx_params)
+        let context = llama_init_from_model(model, ctx_params)
         guard let context else {
             print("Could not load context!")
             throw LlamaError.couldNotInitializeContext
@@ -137,24 +136,17 @@ actor LlamaContext {
     }
 
     func completion_loop() -> String {
-        var new_token_id: llama_token = 0
-
-        let n_vocab = llama_n_vocab(model)
-        let logits = llama_get_logits_ith(context, batch.n_tokens - 1)
-
-        var candidates = Array<llama_token_data>()
-        candidates.reserveCapacity(Int(n_vocab))
-
-        for token_id in 0..<n_vocab {
-            candidates.append(llama_token_data(id: token_id, logit: logits![Int(token_id)], p: 0.0))
+        // Use the new sampler API
+        let sampler = llama_sampler_init_greedy()
+        defer {
+            llama_sampler_free(sampler)
         }
-        candidates.withUnsafeMutableBufferPointer() { buffer in
-            var candidates_p = llama_token_data_array(data: buffer.baseAddress, size: buffer.count, sorted: false)
-
-            new_token_id = llama_sample_token_greedy(context, &candidates_p)
-        }
-
-        if new_token_id == llama_token_eos(model) || n_cur == n_len {
+        
+        // Sample token using the new API (idx = -1 means use the last output)
+        let new_token_id = llama_sampler_sample(sampler, context, -1)
+        
+        let vocab = llama_model_get_vocab(model)
+        if new_token_id == llama_vocab_eos(vocab) || n_cur == n_len {
             let new_token_str = String(cString: temporary_invalid_cchars + [0])
             temporary_invalid_cchars.removeAll()
             return new_token_str
@@ -191,14 +183,16 @@ actor LlamaContext {
     func clear() {
         tokens_list.removeAll()
         temporary_invalid_cchars.removeAll()
-        llama_kv_cache_clear(context)
+        let mem = llama_get_memory(context)
+        llama_memory_clear(mem, true)  // true = clear data
     }
 
     private func tokenize(text: String, add_bos: Bool) -> [llama_token] {
+        let vocab = llama_model_get_vocab(model)
         let utf8Count = text.utf8.count
         let n_tokens = utf8Count + (add_bos ? 1 : 0) + 1
         let tokens = UnsafeMutablePointer<llama_token>.allocate(capacity: n_tokens)
-        let tokenCount = llama_tokenize(model, text, Int32(utf8Count), tokens, Int32(n_tokens), add_bos, false)
+        let tokenCount = llama_tokenize(vocab, text, Int32(utf8Count), tokens, Int32(n_tokens), add_bos, false)
 
         var swiftTokens: [llama_token] = []
         for i in 0..<tokenCount {
@@ -212,12 +206,14 @@ actor LlamaContext {
 
     /// - note: The result does not contain null-terminator
     private func token_to_piece(token: llama_token) -> [CChar] {
+        let vocab = llama_model_get_vocab(model)
         let result = UnsafeMutablePointer<Int8>.allocate(capacity: 8)
         result.initialize(repeating: Int8(0), count: 8)
         defer {
             result.deallocate()
         }
-        let nTokens = llama_token_to_piece(model, token, result, 8)
+        // lstrip = 0 (don't skip leading spaces), special = false (don't render special tokens)
+        let nTokens = llama_token_to_piece(vocab, token, result, 8, 0, false)
 
         if nTokens < 0 {
             let newResult = UnsafeMutablePointer<Int8>.allocate(capacity: Int(-nTokens))
@@ -225,7 +221,7 @@ actor LlamaContext {
             defer {
                 newResult.deallocate()
             }
-            let nNewTokens = llama_token_to_piece(model, token, newResult, -nTokens)
+            let nNewTokens = llama_token_to_piece(vocab, token, newResult, -nTokens, 0, false)
             let bufferPointer = UnsafeBufferPointer(start: newResult, count: Int(nNewTokens))
             return Array(bufferPointer)
         } else {

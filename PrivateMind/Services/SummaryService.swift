@@ -59,9 +59,10 @@ final class SummaryService: ObservableObject {
         prompt += "Summary:"
         print("[Summary] Prompt: \(prompt)")
 
-        let summary = try await llamaState.complete(text: prompt, tokenCallback: tokenCallback)
+        let (summary, tokenCount) = try await llamaState.complete(text: prompt, tokenCallback: tokenCallback)
         let duration = Date().timeIntervalSince(startTime)
-        print("[Summary] Finished summary generation. outputChars=\(summary.count), duration=\(String(format: "%.2f", duration))s")
+        let tokensPerSecond = duration > 0 ? Double(tokenCount) / duration : 0.0
+        print("[Summary] Finished summary generation. outputChars=\(summary.count), duration=\(String(format: "%.2f", duration))s, tokens=\(tokenCount), tokens/s=\(String(format: "%.2f", tokensPerSecond))")
 
         return summary
     }
@@ -97,10 +98,11 @@ final class SummaryService: ObservableObject {
         Title:
         """
 
-        let title = try await llamaState.complete(text: prompt, tokenCallback: tokenCallback)
+        let (title, tokenCount) = try await llamaState.complete(text: prompt, tokenCallback: tokenCallback)
         let cleanTitle = title.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         let duration = Date().timeIntervalSince(startTime)
-        print("[Summary] Finished title generation. Raw title: '\(title)', Clean title: '\(cleanTitle)', titleChars=\(cleanTitle.count), duration=\(String(format: "%.2f", duration))s")
+        let tokensPerSecond = duration > 0 ? Double(tokenCount) / duration : 0.0
+        print("[Summary] Finished title generation. Raw title: '\(title)', Clean title: '\(cleanTitle)', titleChars=\(cleanTitle.count), duration=\(String(format: "%.2f", duration))s, tokens=\(tokenCount), tokens/s=\(String(format: "%.2f", tokensPerSecond))")
 
         return cleanTitle
     }
