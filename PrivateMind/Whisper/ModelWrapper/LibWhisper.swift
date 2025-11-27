@@ -1,8 +1,5 @@
 import Foundation
-// Note: Whisper functionality was part of the old llamaforked package.
-// You may need to integrate whisper.cpp separately or find an alternative solution.
-// For now, commenting out to allow the project to compile.
-// import WhisperFramework
+import whisper
 
 enum WhisperError: Error {
     case couldNotInitializeContext
@@ -17,19 +14,20 @@ actor WhisperContext {
     }
 
     deinit {
-        // whisper_free(context)  // Whisper not available - need to integrate whisper.cpp separately
+        whisper_free(context)
     }
 
     func fullTranscribe(samples: [Float], languageCode: String = "en") {
-        // TODO: Whisper functionality is not available - whisper.cpp needs to be integrated separately
-        // The old llamaforked package included both llama.cpp and whisper.cpp, but they are separate projects
-        print("[Whisper] ERROR: Whisper functionality not available. Please integrate whisper.cpp separately.")
-        // Original code commented out:
-        /*
+        // Leave 2 processors free (i.e. the high-efficiency cores).
         let maxThreads = max(1, min(8, cpuCount() - 2))
+        
         var params = whisper_full_default_params(WHISPER_SAMPLING_GREEDY)
+        
+        // Map language codes to Whisper language codes
         let whisperLang = WhisperContext.mapLanguageCode(languageCode)
+        
         whisperLang.withCString { lang in
+            // Adapted from whisper.objc
             params.print_realtime   = true
             params.print_progress   = false
             params.print_timestamps = true
@@ -40,26 +38,27 @@ actor WhisperContext {
             params.offset_ms        = 0
             params.no_context       = true
             params.single_segment   = false
+
             whisper_reset_timings(context)
+            print("[Whisper] About to run whisper_full with language: \(whisperLang)")
             samples.withUnsafeBufferPointer { samples in
                 if (whisper_full(context, params, samples.baseAddress, Int32(samples.count)) != 0) {
                     print("[Whisper] Failed to run the model")
                 }
             }
         }
-        */
     }
 
     func getTranscription() -> String {
-        // TODO: Whisper not available
-        return ""
-        // Original: for i in 0..<whisper_full_n_segments(context) { ... }
+        var transcription = ""
+        for i in 0..<whisper_full_n_segments(context) {
+            transcription += String.init(cString: whisper_full_get_segment_text(context, i))
+        }
+        return transcription
     }
     
     func getSegmentCount() -> Int {
-        // TODO: Whisper not available
-        return 0
-        // Original: return Int(whisper_full_n_segments(context))
+        return Int(whisper_full_n_segments(context))
     }
     
     struct TranscriptionSegment {
@@ -67,34 +66,38 @@ actor WhisperContext {
     }
     
     func getTranscriptionSegments() -> [TranscriptionSegment] {
-        // TODO: Whisper not available
-        return []
-        // Original: let count = Int(whisper_full_n_segments(context)) ...
+        let count = Int(whisper_full_n_segments(context))
+        var segments: [TranscriptionSegment] = []
+        for i in 0..<count {
+            let text = String(cString: whisper_full_get_segment_text(context, Int32(i)))
+            segments.append(TranscriptionSegment(text: text))
+        }
+        return segments
     }
 
     static func createContext(path: String) throws -> WhisperContext {
-        // TODO: Whisper not available - need to integrate whisper.cpp separately
-        print("[Whisper] ERROR: Whisper functionality not available. Please integrate whisper.cpp separately.")
-        throw WhisperError.couldNotInitializeContext
-        // Original code commented out:
-        /*
         var params = whisper_context_default_params()
-        #if targetEnvironment(simulator)
+#if targetEnvironment(simulator)
         params.use_gpu = false
-        #endif
+        print("[Whisper] Running on the simulator, using CPU")
+#endif
         let context = whisper_init_from_file_with_params(path, params)
         if let context {
             return WhisperContext(context: context)
         } else {
+            print("[Whisper] Couldn't load model at \(path)")
             throw WhisperError.couldNotInitializeContext
         }
-        */
     }
 
     static func vad(samples: [Float]) -> Bool {
-        // TODO: Whisper not available
+        // Note: The old vad_simple_c function is no longer available in the latest whisper.cpp
+        // VAD is now integrated into whisper_full_params. For simple VAD, you may need to:
+        // 1. Use a separate VAD library, or
+        // 2. Use whisper's built-in VAD by setting params.vad = true in whisper_full_params
+        // For now, returning false (no silence detected) to maintain compatibility
+        // TODO: Implement proper VAD using whisper's built-in VAD or a separate library
         return false
-        // Original: let silence = vad_simple_c(&samples, Int32(samples.count), Int32(sampleRate), Int32(lastMs), vadThold, freqThold, verbose ? 1 : 0)
     }
     
     /// Maps language codes (e.g., "en-US", "zh-CN") to Whisper language codes (e.g., "en", "zh")

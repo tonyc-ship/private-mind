@@ -26,3 +26,5 @@ PrivateMind/Info.plist.local
 # XCFramework binaries (too large for git, build locally)
 llama-cpp-xcframework/LlamaFramework.xcframework/
 llama-cpp-xcframework/.build
+whisper-cpp-xcframework/WhisperFramework.xcframework/
+whisper-cpp-xcframework/.build

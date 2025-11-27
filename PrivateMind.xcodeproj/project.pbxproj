@@ -11,6 +11,7 @@
 		290804E12E1C7214006C7AB9 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 290804E02E1C7214006C7AB9 /* SwiftUI.framework */; };
 		290804F02E1C7214006C7AB9 /* RecordingStatusWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 290804DC2E1C7214006C7AB9 /* RecordingStatusWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		2943089C2ED1570C0013B60C /* LlamaFramework in Frameworks */ = {isa = PBXBuildFile; productRef = 2943089B2ED1570C0013B60C /* LlamaFramework */; };
+		2943089D2ED1570D0013B60D /* WhisperFramework in Frameworks */ = {isa = PBXBuildFile; productRef = 2943089E2ED1570D0013B60D /* WhisperFramework */; };
 		29594AB12E0C801F00A3A2B4 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 29594AB02E0C801F00A3A2B4 /* GRDB */; };
 		29594ABB2E0DAD4500A3A2B4 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 29594ABA2E0DAD4500A3A2B4 /* MarkdownUI */; };
 /* End PBXBuildFile section */
@@ -107,6 +108,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2943089C2ED1570C0013B60C /* LlamaFramework in Frameworks */,
+				2943089D2ED1570D0013B60D /* WhisperFramework in Frameworks */,
 				29594AB12E0C801F00A3A2B4 /* GRDB in Frameworks */,
 				29594ABB2E0DAD4500A3A2B4 /* MarkdownUI in Frameworks */,
 			);
@@ -191,6 +193,7 @@
 				29594AB02E0C801F00A3A2B4 /* GRDB */,
 				29594ABA2E0DAD4500A3A2B4 /* MarkdownUI */,
 				2943089B2ED1570C0013B60C /* LlamaFramework */,
+				2943089E2ED1570D0013B60D /* WhisperFramework */,
 			);
 			productName = PrivateMind;
 			productReference = 29BF4EEE2E0C7D0200AFBBB8 /* PrivateMind.app */;
@@ -227,6 +230,7 @@
 				29594AAF2E0C801F00A3A2B4 /* XCRemoteSwiftPackageReference "GRDB" */,
 				29594AB92E0DAD4500A3A2B4 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
 				2943089A2ED1570C0013B60C /* XCLocalSwiftPackageReference "llama-cpp-xcframework" */,
+				2943089F2ED1570D0013B60D /* XCLocalSwiftPackageReference "whisper-cpp-xcframework" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 29BF4EEF2E0C7D0200AFBBB8 /* Products */;
@@ -562,6 +566,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = llama-cpp-xcframework;
 		};
+		2943089F2ED1570D0013B60D /* XCLocalSwiftPackageReference "whisper-cpp-xcframework" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = whisper-cpp-xcframework;
+		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -586,8 +594,13 @@
 /* Begin XCSwiftPackageProductDependency section */
 		2943089B2ED1570C0013B60C /* LlamaFramework */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 2943089A2ED1570C0013B60C /* XCRemoteSwiftPackageReference "llama-cpp-xcframework" */;
+			package = 2943089A2ED1570C0013B60C /* XCLocalSwiftPackageReference "llama-cpp-xcframework" */;
 			productName = LlamaFramework;
+		};
+		2943089E2ED1570D0013B60D /* WhisperFramework */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2943089F2ED1570D0013B60D /* XCLocalSwiftPackageReference "whisper-cpp-xcframework" */;
+			productName = WhisperFramework;
 		};
 		29594AB02E0C801F00A3A2B4 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
