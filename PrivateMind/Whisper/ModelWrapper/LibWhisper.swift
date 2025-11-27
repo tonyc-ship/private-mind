@@ -75,12 +75,20 @@ actor WhisperContext {
         return segments
     }
 
-    static func createContext(path: String) throws -> WhisperContext {
+    static func createContext(path: String, useGPU: Bool = true) throws -> WhisperContext {
         var params = whisper_context_default_params()
-#if targetEnvironment(simulator)
+        
+        // Disable GPU in simulator or when explicitly requested (e.g., when backgrounded)
+        #if targetEnvironment(simulator)
         params.use_gpu = false
         print("[Whisper] Running on the simulator, using CPU")
-#endif
+        #else
+        params.use_gpu = useGPU
+        if !useGPU {
+            print("[Whisper] GPU disabled, using CPU (required for background execution)")
+        }
+        #endif
+        
         let context = whisper_init_from_file_with_params(path, params)
         if let context {
             return WhisperContext(context: context)

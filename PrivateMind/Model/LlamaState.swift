@@ -92,12 +92,17 @@ class LlamaState: ObservableObject {
             tokenCount += 1
             
             if token.isEmpty {
-                print("[LlamaState] Empty token received at iteration \(tokenCount), breaking")
+                print("\n[LlamaState] Empty token received at iteration \(tokenCount), breaking")
                 break
             }
             
             result += token
-            print("[LlamaState] Token \(tokenCount): '\(token)' (result length now: \(result.count))")
+            
+            // Concise streaming log - bypass custom logger to avoid timestamp per token
+            Swift.print(token, terminator: "")
+            if tokenCount % 50 == 0 {
+                fflush(stdout)
+            }
             
             // Update current position
             current_n_cur = await llamaContext.n_cur
@@ -112,7 +117,10 @@ class LlamaState: ObservableObject {
         
         await llamaContext.clear()
         let trimmed = result.trimmingCharacters(in: .whitespacesAndNewlines)
+        Swift.print("") // Newline after streaming
         print("[LlamaState] Completion finished. Token count: \(tokenCount), Raw result length: \(result.count), Trimmed length: \(trimmed.count)")
+        // Log the full result to file logger
+        print("[LlamaState] Final Output: \(trimmed)")
         return (trimmed, tokenCount)
     }
 

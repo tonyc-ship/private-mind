@@ -16,8 +16,10 @@ actor WhisperRecorder {
             AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
         ]
 #if !os(macOS)
-        let session = AVAudioSession.sharedInstance()
-        try session.setCategory(.playAndRecord, mode: .default)
+        // Note: Audio session is configured by WhisperTranscribeService
+        // Don't reconfigure here to avoid conflicts
+        // let session = AVAudioSession.sharedInstance()
+        // try session.setCategory(.playAndRecord, mode: .default)
 #endif
         let recorder = try AVAudioRecorder(url: url, settings: recordSettings)
         recorder.delegate = delegate

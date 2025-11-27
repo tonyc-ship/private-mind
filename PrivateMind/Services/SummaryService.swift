@@ -42,21 +42,35 @@ final class SummaryService: ObservableObject {
 
         try await ensureModelLoaded()
 
-        // Build the prompt for summary generation
-        var prompt = "You are an expert meeting assistant. Generate a comprehensive summary of the following meeting.\n\n"
+        // Build the prompt using ChatML format (standard for Qwen and many other models)
+        // <|im_start|>system
+        // {system_message}<|im_end|>
+        // <|im_start|>user
+        // {user_message}<|im_end|>
+        // <|im_start|>assistant
         
+        let systemPrompt = "You are a helpful and precise meeting assistant. Your task is to summarize the provided meeting transcript."
+        
+        var userPrompt = ""
         if !notes.isEmpty {
-            prompt += "User Notes:\n\(notes)\n\n"
+            userPrompt += "User Notes:\n\(notes)\n\n"
         }
-        
-        prompt += "Transcript:\n\(transcript)\n\n"
-        prompt += "Generate a detailed summary in \(languageCode). "
+        userPrompt += "Transcript:\n\(transcript)\n\n"
+        userPrompt += "Please provide a structured summary in \(languageCode). Focus on key points, decisions, and action items. Be concise."
         
         if template != "Auto" && !template.isEmpty {
-            prompt += "Use the following template structure:\n\(template)\n\n"
+            userPrompt += "\n\nUse this format:\n\(template)"
         }
         
-        prompt += "Summary:"
+        let prompt = """
+        <|im_start|>system
+        \(systemPrompt)<|im_end|>
+        <|im_start|>user
+        \(userPrompt)<|im_end|>
+        <|im_start|>assistant
+        
+        """
+        
         print("[Summary] Prompt: \(prompt)")
 
         let (summary, tokenCount) = try await llamaState.complete(text: prompt, tokenCallback: tokenCallback)
@@ -83,19 +97,22 @@ final class SummaryService: ObservableObject {
 
         try await ensureModelLoaded()
         
-        // Use a simpler, more direct prompt format that works better with instruction-tuned models
-        // Truncate summary if too long to avoid context issues
-        let truncatedSummary = summary.count > 500 ? String(summary.prefix(500)) + "..." : summary
+        // Use ChatML format for title generation as well
+        // Truncate summary if too long to avoid context issues and distraction
+        let truncatedSummary = summary.count > 1000 ? String(summary.prefix(1000)) + "..." : summary
         
         let prompt = """
-        Generate a concise meeting title (max 10 words) based on this summary:
-
-        Meeting Summary:
+        <|im_start|>system
+        You are a helpful assistant. Generate a short, descriptive title for the meeting.<|im_end|>
+        <|im_start|>user
+        Based on the following summary, generate a concise meeting title (max 10 words). Do not use quotes.
+        
+        Summary:
         \(truncatedSummary)
-
-        Language: \(languageCode)
-
-        Title:
+        
+        Language: \(languageCode)<|im_end|>
+        <|im_start|>assistant
+        Title: 
         """
 
         let (title, tokenCount) = try await llamaState.complete(text: prompt, tokenCallback: tokenCallback)

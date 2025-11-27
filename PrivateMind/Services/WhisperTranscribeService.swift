@@ -1,6 +1,7 @@
 import Foundation
 import AVFoundation
 import Combine
+import UIKit
 
 /// Service that uses Whisper model for on-device transcription.
 /// This provides an alternative to the WebSocket-based transcription service.
@@ -32,6 +33,18 @@ final class WhisperTranscribeService: NSObject, ObservableObject, AVAudioRecorde
     
     private var transcriptionTask: Task<Void, Never>?
     private var isModelLoaded = false
+    private var isInBackground = false
+    nonisolated(unsafe) private var backgroundObservers: [NSObjectProtocol] = []
+    
+    override init() {
+        super.init()
+        setupBackgroundObservers()
+    }
+    
+    deinit {
+        // Remove observers synchronously - NotificationCenter.removeObserver is thread-safe
+        backgroundObservers.forEach { NotificationCenter.default.removeObserver($0) }
+    }
     
     // MARK: - Public API
     /// Starts recording and transcribing with Whisper.
@@ -57,8 +70,9 @@ final class WhisperTranscribeService: NSObject, ObservableObject, AVAudioRecorde
             isPaused = false
             
             // Load model in background
+            // Use GPU if not in background, CPU if backgrounded
             Task {
-                await loadModel()
+                await loadModel(useGPU: !isInBackground)
             }
             
             // Start periodic transcription
@@ -120,12 +134,76 @@ final class WhisperTranscribeService: NSObject, ObservableObject, AVAudioRecorde
     
     // MARK: - Private helpers
     private func configureAudioSession() throws {
+        // Configure for background audio recording
+        // .defaultToSpeaker ensures audio continues when screen is locked
         try session.setCategory(.playAndRecord, mode: .measurement, options: [.allowBluetooth, .defaultToSpeaker])
         try session.setActive(true, options: .notifyOthersOnDeactivation)
     }
     
-    private func loadModel() async {
-        guard !isModelLoaded, whisperContext == nil else { return }
+    private func setupBackgroundObservers() {
+        let center = NotificationCenter.default
+        
+        // Observe when app enters background
+        let willResignActive = center.addObserver(
+            forName: UIApplication.willResignActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                self?.handleAppBackground()
+            }
+        }
+        
+        // Observe when app enters foreground
+        let didBecomeActive = center.addObserver(
+            forName: UIApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                self?.handleAppForeground()
+            }
+        }
+        
+        backgroundObservers = [willResignActive, didBecomeActive]
+    }
+    
+    
+    private func handleAppBackground() {
+        isInBackground = true
+        print("[WhisperTranscribe] App entered background - reloading model with CPU-only mode")
+        
+        // Reload model with CPU-only mode (Metal cannot be used in background)
+        Task {
+            // Free old context
+            whisperContext = nil
+            isModelLoaded = false
+            
+            // Reload with CPU-only
+            await loadModel(useGPU: false)
+        }
+    }
+    
+    private func handleAppForeground() {
+        isInBackground = false
+        print("[WhisperTranscribe] App entered foreground - reloading model with GPU support")
+        
+        // Reload model with GPU support when back in foreground
+        Task {
+            // Free old context
+            whisperContext = nil
+            isModelLoaded = false
+            
+            // Reload with GPU
+            await loadModel(useGPU: true)
+        }
+    }
+    
+    private func loadModel(useGPU: Bool = true) async {
+        // If already loaded with the correct GPU setting, don't reload
+        if isModelLoaded && whisperContext != nil {
+            return
+        }
         
         guard let modelUrl else {
             print("[WhisperTranscribe] Whisper model not found in bundle")
@@ -133,9 +211,9 @@ final class WhisperTranscribeService: NSObject, ObservableObject, AVAudioRecorde
         }
         
         do {
-            whisperContext = try WhisperContext.createContext(path: modelUrl.path())
+            whisperContext = try WhisperContext.createContext(path: modelUrl.path(), useGPU: useGPU)
             isModelLoaded = true
-            print("[WhisperTranscribe] Model loaded successfully from: \(modelUrl.path)")
+            print("[WhisperTranscribe] Model loaded successfully from: \(modelUrl.path()) (GPU: \(useGPU))")
         } catch {
             print("[WhisperTranscribe] Failed to load model: \(error)")
         }
@@ -169,8 +247,8 @@ final class WhisperTranscribeService: NSObject, ObservableObject, AVAudioRecorde
     
     private func performIncrementalTranscription(file: URL) async {
         guard isModelLoaded, let whisperContext = whisperContext else {
-            // Try loading model again
-            await loadModel()
+            // Try loading model again with appropriate GPU setting
+            await loadModel(useGPU: !isInBackground)
             return
         }
         
@@ -279,7 +357,7 @@ final class WhisperTranscribeService: NSObject, ObservableObject, AVAudioRecorde
     
     private func performFinalTranscription(file: URL) async {
         guard isModelLoaded, let whisperContext = whisperContext else {
-            await loadModel()
+            await loadModel(useGPU: !isInBackground)
             guard let whisperContext = whisperContext else {
                 print("[WhisperTranscribe] Model not loaded for final transcription")
                 return

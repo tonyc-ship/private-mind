@@ -6,11 +6,34 @@ struct SummarySectionView: View {
     let isProcessing: Bool
     let onResummarize: () -> Void
     let onCopy: () -> Void
+    
+    @State private var isThoughtExpanded = false
+    
+    // Computed properties to split thought and content
+    private var parsedContent: (thought: String?, content: String) {
+        // Check for <think> tag using inline flag (?s) for dot-matches-newline
+        if let range = summary.range(of: "(?s)<think>(.*?)(</think>|$)", options: .regularExpression) {
+            let thoughtMatch = String(summary[range])
+            let thoughtContent = thoughtMatch
+                .replacingOccurrences(of: "<think>", with: "")
+                .replacingOccurrences(of: "</think>", with: "")
+                .trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+            
+            var finalContent = summary
+            finalContent.removeSubrange(range)
+            finalContent = finalContent.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+            
+            return (thoughtContent, finalContent)
+        }
+        return (nil, summary)
+    }
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 8) {
+                    let (thought, content) = parsedContent
+                    
                     if isProcessing && summary.isEmpty {
                         // Show loading indicator only if summary is completely empty
                         VStack(spacing: 4) {
@@ -21,9 +44,9 @@ struct SummarySectionView: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding()
-                    } else if isProcessing {
-                        // Show streaming summary with processing indicator
-                        VStack(alignment: .leading, spacing: 8) {
+                    } else {
+                        // Processing indicator if still streaming
+                        if isProcessing {
                             HStack(spacing: 8) {
                                 ProgressView()
                                     .scaleEffect(0.8)
@@ -32,16 +55,54 @@ struct SummarySectionView: View {
                                     .foregroundColor(.secondary)
                             }
                             .padding(.bottom, 4)
-                            
-                            Markdown(summary)
                         }
-                        .padding()
-                    } else {
-                        // Show final summary
-                        Markdown(summary)
-                            .padding()
+                        
+                        // Show thought block if present
+                        if let thought = thought, !thought.isEmpty {
+                            DisclosureGroup(
+                                isExpanded: $isThoughtExpanded,
+                                content: {
+                                    Text(thought)
+                                        .font(.system(.caption, design: .monospaced))
+                                        .foregroundColor(.secondary)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .padding(8)
+                                        .background(Color.secondary.opacity(0.1))
+                                        .cornerRadius(8)
+                                },
+                                label: {
+                                    Text("Thinking Process")
+                                        .font(.caption)
+                                        .fontWeight(.medium)
+                                        .foregroundColor(.secondary)
+                                }
+                            )
+                            .padding(.bottom, 8)
+                            .onChange(of: isProcessing) { isProcessing in
+                                // Auto-collapse when finished, auto-expand when starting if desired
+                                // For now, let's keep user preference or default to collapsed
+                                if isProcessing {
+                                    isThoughtExpanded = true
+                                } else {
+                                    withAnimation {
+                                        isThoughtExpanded = false
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Show final summary content
+                        if !content.isEmpty {
+                            Markdown(content)
+                                .padding(.bottom)
+                        } else if thought == nil {
+                            // Fallback if no content and no thought (should happen only briefly)
+                            Markdown(summary)
+                                .padding(.bottom)
+                        }
                     }
                 }
+                .padding()
             }
 
             HStack(spacing: 4) {
