@@ -564,11 +564,11 @@
 /* Begin XCLocalSwiftPackageReference section */
 		2943089A2ED1570C0013B60C /* XCLocalSwiftPackageReference "llama-cpp-xcframework" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = llama-cpp-xcframework;
+			relativePath = "llama-cpp-xcframework";
 		};
 		2943089F2ED1570D0013B60D /* XCLocalSwiftPackageReference "whisper-cpp-xcframework" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = whisper-cpp-xcframework;
+			relativePath = "whisper-cpp-xcframework";
 		};
 /* End XCLocalSwiftPackageReference section */
 

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct NotesListView: View {
     @StateObject private var viewModel = NotesListViewModel()
+    @ObservedObject private var navManager = NavigationManager.shared
     @State private var showNewNoteSheet = false
     @State private var pendingNote: Note?
     @State private var showSettings = false
@@ -132,6 +133,26 @@ struct NotesListView: View {
             }
             .onAppear {
                 viewModel.load()
+                
+                if navManager.shouldStartNewNote {
+                    navManager.shouldStartNewNote = false
+                    startNewNote()
+                }
+            }
+            .onChange(of: navManager.shouldStartNewNote) { shouldStart in
+                if shouldStart {
+                    navManager.shouldStartNewNote = false
+                    startNewNote()
+                }
+            }
+        }
+    }
+    
+    private func startNewNote() {
+        Task {
+            if let note = await viewModel.addEmptyNote() {
+                pendingNote = note
+                showNewNoteSheet = true
             }
         }
     }

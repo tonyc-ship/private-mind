@@ -14,7 +14,7 @@ struct RecordingStatusWidget: Widget {
         ActivityConfiguration(for: RecordingActivityAttributes.self) { context in
             // Lock screen UI
             HStack(spacing: 16) {
-                Image("PrivateMindIcon", bundle: .main)
+                Image("AppIconImage", bundle: .main)
                     .renderingMode(.original)
                     .resizable()
                     .aspectRatio(contentMode: .fit)

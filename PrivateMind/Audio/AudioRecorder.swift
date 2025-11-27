@@ -130,6 +130,10 @@ final class AudioRecorder: NSObject, ObservableObject, AVAudioRecorderDelegate, 
     // MARK: - Live Activity
     
     private func startLiveActivity(title: String) {
+        // Default to true if not set
+        let showActivity = UserDefaults.standard.object(forKey: "showRecordingLiveActivity") as? Bool ?? true
+        guard showActivity else { return }
+        
         let attributes = RecordingActivityAttributes(meetingTitle: title)
         let initialState = RecordingActivityAttributes.ContentState(state: .recording(startTime: .now))
 

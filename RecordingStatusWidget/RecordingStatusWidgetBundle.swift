@@ -12,6 +12,7 @@ import SwiftUI
 struct RecordingStatusWidgetBundle: WidgetBundle {
     var body: some Widget {
         RecordingStatusWidget()
+        StartRecordingWidget()
         RecordingStatusWidgetControl()
         RecordingStatusWidgetLiveActivity()
     }
